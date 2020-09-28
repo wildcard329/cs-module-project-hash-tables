@@ -21,7 +21,10 @@ class HashTable:
     """
 
     def __init__(self, capacity):
-        # Your code here
+        self.capacity = capacity
+        # need to know how much of the table is used, will use size var
+        self.size = 0
+        self.buckets = [None] * self.capacity
 
 
     def get_num_slots(self):
@@ -35,6 +38,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        return self.capacity
 
 
     def get_load_factor(self):
@@ -44,6 +48,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        # implement on day 2
 
 
     def fnv1(self, key):
@@ -63,7 +68,13 @@ class HashTable:
         Implement this, and/or FNV-1.
         """
         # Your code here
-
+        # pseudocode: hash(i) = hash(i - 1) * 33 ^ str[i]
+        hash = 5381
+        byte = key.encode('utf-8')
+        for b in byte:
+            hash = ((hash * 33) ^ b) % 0x100000000
+            print(hash)
+        return hash
 
     def hash_index(self, key):
         """
@@ -71,6 +82,8 @@ class HashTable:
         between within the storage capacity of the hash table.
         """
         #return self.fnv1(key) % self.capacity
+        print('index: ')
+        print(self.djb2(key) % self.capacity)
         return self.djb2(key) % self.capacity
 
     def put(self, key, value):
@@ -82,6 +95,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        self.buckets[self.hash_index(key)] = HashTableEntry(key, value)
 
 
     def delete(self, key):
@@ -93,7 +107,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        self.buckets[self.hash_index(key)] = None
 
     def get(self, key):
         """
@@ -104,7 +118,12 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        ht_index = self.buckets[self.hash_index(key)]
+        
+        if ht_index is not None:
+            return ht_index.value
+        else:
+            return None
 
     def resize(self, new_capacity):
         """
